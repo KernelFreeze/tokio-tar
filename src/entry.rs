@@ -474,6 +474,10 @@ impl<R: Read + Unpin> EntryFields<R> {
 
         let canon_target = self.validate_inside_dst(dst, parent).await?;
 
+        let mut path_iter = file_dst.iter();
+        path_iter.next(); // skip the first component
+        let file_dst = path_iter.collect::<PathBuf>();
+
         self.unpack(Some(&canon_target), &file_dst)
             .await
             .map_err(|e| TarError::new(&format!("failed to unpack `{}`", file_dst.display()), e))?;
